@@ -33,14 +33,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSystem driveSystem;
-  private final Limelight limelight;  private final Limelight limelight;
+  private final Limelight limelight;
 
   private final GripperSystem gripperSystem;
   private final XboxController operator;
   private final JoystickButton xButton;
   private final Joystick driverLeft;
+  private final JoystickButton driverLeftRotateToTarget;
   private final Joystick driverRight;
+  private final JoystickButton driverRightRotateToTarget;
 
+  private final RotateToTarget rotateToTarget;
   // hardware connection check stuff
   private final NetworkTable hardware = NetworkTableInstance.getDefault().getTable("Hardware");
 
@@ -49,26 +52,31 @@ public class RobotContainer {
   operator = new XboxController(OperatorConstants.OP_CONTROLLER);
   xButton = new JoystickButton(operator, XboxController.Button.kX.value);
   driverLeft = new Joystick(OperatorConstants.DRIVER_LEFT_PORT);
+  driverLeftRotateToTarget = new JoystickButton(driverLeft, OperatorConstants.DRIVER_BUTTON_ROTATE_TO_TARGET);
   driverRight = new Joystick(OperatorConstants.DRIVER_RIGHT_PORT);
-
+  driverRightRotateToTarget = new JoystickButton(driverRight, OperatorConstants.DRIVER_BUTTON_ROTATE_TO_TARGET);
+  
     driveSystem = new DriveSystem();
     driveSystem.setDefaultCommand(driveSystem.driveWithJoystick(driverLeft, driverRight));
     
     gripperSystem = new GripperSystem();
 
     limelight = new Limelight();
-    limelight = new Limelight();
 
     SmartDashboard.putData(driveSystem);
     SmartDashboard.putData(gripperSystem);
     SmartDashboard.putData(limelight);
     
+    // Commands are instantiated here
+    rotateToTarget = new RotateToTarget(driveSystem, limelight);
+
     // Configure the trigger bindings
     configureBindings();
 
     // hardware check
     Shuffleboard.getTab("Hardware").add(getCheckCommand());
     Shuffleboard.getTab("Hardware").add(CommandScheduler.getInstance());
+
   }
 
   /**
@@ -82,6 +90,8 @@ public class RobotContainer {
    */
   private void configureBindings() {
     xButton.whileTrue(gripperSystem.intake());
+    driverLeftRotateToTarget.onTrue(rotateToTarget);
+    driverRightRotateToTarget.onTrue(rotateToTarget);
   }
 
   private CommandBase getCheckCommand() {
@@ -130,3 +140,4 @@ public class RobotContainer {
     limelight.autoArmLift();
   }
 }
+

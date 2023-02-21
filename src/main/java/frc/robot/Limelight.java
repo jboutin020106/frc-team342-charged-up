@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Testable;
 import static frc.robot.Constants.LimelightConstants.*;
 
-class Limelight implements Testable, Sendable {
+public class Limelight implements Testable, Sendable {
 
     /**
      * Provides an object through which to access the networkTables entries associated with the limelight
