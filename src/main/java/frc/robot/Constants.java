@@ -75,7 +75,7 @@ public final class Constants {
     public static final double MAX_VERT_OFFSET_FOR_MED = 27.0;
 
     /** Degrees */
-    // public static final double MAX_VERT_OFFSET_FOR_HIGH = 90.0;
+    public static final double MAX_VERT_OFFSET_FOR_HIGH = 90.0;
 
     /** Degrees */
     public static final double MAX_VERT_OFFSET_FOR_HP_STATION = 29.0;

@@ -28,6 +28,7 @@ public class RobotContainer {
   private final DriveSystem driveSystem;
   private final Limelight limelight;
   private final XboxController driver = new XboxController(OperatorConstants.kDriverControllerPort);
+  private final JoystickButton driveToDistanceButton = new JoystickButton(driver, 1);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -52,6 +53,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    driveToDistanceButton.toggleOnTrue(driveSystem.driveDistance(-1, 2));
   }
 
   /**

@@ -17,6 +17,8 @@ public class Limelight implements Sendable{
     public Limelight(){
         SendableRegistry.addLW(this, "Limelight", "Limelight");
     }
+
+
     /**
      * Provides an object through which to access the networkTables entries associated with the limelight
      */
@@ -245,13 +247,9 @@ public class Limelight implements Sendable{
                     return forwardDistanceFromMed;
                 }
 
-                //if(isHighLevelTarget(verticalOffset)){
-                    //double forwardDistanceFromHigh = HEIGHT_TO_HIGH / Math.tan(verticalOffset);
-                    //return forwardDistanceFromHigh;
-                //}
-
-                else{
-                    
+                if(isHighLevelTarget(verticalOffset)){
+                    double forwardDistanceFromHigh = HEIGHT_TO_HIGH / Math.tan(verticalOffset);
+                    return forwardDistanceFromHigh;
                 }
             }
 
