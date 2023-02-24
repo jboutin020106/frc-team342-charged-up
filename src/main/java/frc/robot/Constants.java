@@ -24,6 +24,8 @@ public final class Constants {
 
     public static final int OP_BUTTON_HUMAN_PLAYER_YELLOW = 9;
     public static final int OP_BUTTON_HUMAN_PLAYER_PURPLE = 10;
+
+    public static final int DRIVER_BUTTON_ROTATE_TO_TARGET = 4;
   }
 
   public static class LEDConstants

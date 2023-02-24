@@ -90,9 +90,9 @@ public class RobotContainer {
    */
   private void configureBindings() {
     xButton.whileTrue(gripperSystem.intake());
-    driverLeftRotateToTarget.onTrue(rotateToTarget);
-    driverRightRotateToTarget.onTrue(rotateToTarget);
-  }
+    //driverLeftRotateToTarget.onTrue(rotateToTarget);
+   // driverRightRotateToTarget.onTrue(rotateToTarget);
+    driverRightRotateToTarget.triggered (() -> {rotateToTarget;}, () -> {driveSystem.drivePercent(0, 0)};
 
   private CommandBase getCheckCommand() {
     return Commands.sequence(
