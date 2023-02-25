@@ -49,12 +49,12 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-  operator = new XboxController(OperatorConstants.OP_CONTROLLER);
-  xButton = new JoystickButton(operator, XboxController.Button.kX.value);
-  driverLeft = new Joystick(OperatorConstants.DRIVER_LEFT_PORT);
-  driverLeftRotateToTarget = new JoystickButton(driverLeft, OperatorConstants.DRIVER_BUTTON_ROTATE_TO_TARGET);
-  driverRight = new Joystick(OperatorConstants.DRIVER_RIGHT_PORT);
-  driverRightRotateToTarget = new JoystickButton(driverRight, OperatorConstants.DRIVER_BUTTON_ROTATE_TO_TARGET);
+    operator = new XboxController(OperatorConstants.OP_CONTROLLER);
+    xButton = new JoystickButton(operator, XboxController.Button.kX.value);
+    driverLeft = new Joystick(OperatorConstants.DRIVER_LEFT_PORT);
+    driverLeftRotateToTarget = new JoystickButton(driverLeft, OperatorConstants.DRIVER_BUTTON_ROTATE_TO_TARGET);
+    driverRight = new Joystick(OperatorConstants.DRIVER_RIGHT_PORT);
+    driverRightRotateToTarget = new JoystickButton(driverRight, OperatorConstants.DRIVER_BUTTON_ROTATE_TO_TARGET);
   
     driveSystem = new DriveSystem();
     driveSystem.setDefaultCommand(driveSystem.driveWithJoystick(driverLeft, driverRight));
@@ -90,9 +90,9 @@ public class RobotContainer {
    */
   private void configureBindings() {
     xButton.whileTrue(gripperSystem.intake());
-    //driverLeftRotateToTarget.onTrue(rotateToTarget);
-   // driverRightRotateToTarget.onTrue(rotateToTarget);
-    driverRightRotateToTarget.triggered (() -> {rotateToTarget;}, () -> {driveSystem.drivePercent(0, 0)};
+    driverLeftRotateToTarget.onTrue(rotateToTarget);
+    driverRightRotateToTarget.onTrue(rotateToTarget);
+  }
 
   private CommandBase getCheckCommand() {
     return Commands.sequence(
