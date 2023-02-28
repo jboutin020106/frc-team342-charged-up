@@ -67,7 +67,6 @@ public final class Constants {
     /** Meters */
     public static final double HEIGHT_TO_HP_STATION = Units.inchesToMeters(15.375);
 
-    /** todo: add actual values for constants below this line */
     /** Degrees */
     public static final double MAX_VERT_OFFSET_FOR_LOW = 16.0;
 

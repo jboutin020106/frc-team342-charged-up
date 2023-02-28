@@ -17,6 +17,8 @@ public class Limelight implements Sendable{
     public Limelight(){
         SendableRegistry.addLW(this, "Limelight", "Limelight");
     }
+
+    
     /**
      * Provides an object through which to access the networkTables entries associated with the limelight
      */
