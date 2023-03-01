@@ -40,16 +40,26 @@ public class RobotContainer {
   /* Controller and button instantiations */
   private final XboxController operator;
   private final JoystickButton xButton;
+  private final JoystickButton yButton;
+  private final Trigger rightTrigger;
+  private final Trigger leftTrigger;
   private final Joystick driverLeft;
   private final Joystick driverRight;
 
   // hardware connection check stuff
   private final NetworkTable hardware = NetworkTableInstance.getDefault().getTable("Hardware");
 
+  //Command declaration
+  InstantCommand togglePipeline;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
   operator = new XboxController(OperatorConstants.OP_CONTROLLER);
   xButton = new JoystickButton(operator, XboxController.Button.kX.value);
+  yButton = new JoystickButton(operator, XboxController.Button.kY.value);
+  leftTrigger = new Trigger(() -> { return (operator.getLeftTriggerAxis() >= 0.8); }); 
+  rightTrigger = new Trigger(() -> { return (operator.getRightTriggerAxis() >= 0.8); }); 
+
   driverLeft = new Joystick(OperatorConstants.DRIVER_LEFT_PORT);
   driverRight = new Joystick(OperatorConstants.DRIVER_RIGHT_PORT);
 
@@ -74,6 +84,9 @@ public class RobotContainer {
     // hardware check
     Shuffleboard.getTab("Hardware").add(getCheckCommand());
     Shuffleboard.getTab("Hardware").add(CommandScheduler.getInstance());
+
+    // Creates limelight 
+    togglePipeline = new InstantCommand(limelight::togglePipeline);
   }
 
   /**
@@ -86,7 +99,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    xButton.whileTrue(gripperSystem.intake());
+    // xButton.whileTrue(gripperSystem.intake());
+    rightTrigger.whileTrue(gripperSystem.intake());
+    leftTrigger.whileTrue(gripperSystem.outtake());
+    yButton.onTrue(togglePipeline);
   }
 
   private CommandBase getCheckCommand() {
