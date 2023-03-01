@@ -1,4 +1,7 @@
 package frc.robot;
+
+import java.util.List;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -8,11 +11,15 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.Testable;
 import static frc.robot.Constants.LimelightConstants.*;
 
 
-public class Limelight implements Sendable{
+public class Limelight implements Testable, Sendable {
 
     public Limelight(){
         SendableRegistry.addLW(this, "Limelight", "Limelight");
@@ -53,36 +60,45 @@ public class Limelight implements Sendable{
       * @return Outputs either 0 or 1: 0 is for RR tape and 1 is for Apriltags
       */
     public int getPipeline() {
-
         return table.getEntry("pipeline").getNumber(0).intValue();
-
     }
 
     /**
     * Switches between the retroreflective tape & Apriltag pipelines
     */
     public void togglePipeline() {
-
         int currPipe = getPipeline();
         if (currPipe == 0) {
-            table.getEntry("pipeline").setNumber(1);
+            setPipeline(1);
         } else {
-            table.getEntry("pipeline").setNumber(0);
+            setPipeline(0);
         }
+    }
 
+    /**
+     * change the led mode of the limelight
+     * @param mode 0 for pipeline default, 1 for off, 2 for blink, 3 for on
+     */
+    public void setLedMode(int mode) {
+        table.getEntry("ledMode").setInteger(mode);
+    }
+
+    /**
+     * Allows us to set the vision pipeline to a number of our choosing
+     */
+    public void setPipeline(int desiredPipeline) {
+        table.getEntry("pipeline").setNumber(desiredPipeline);
     }
 
     /**
      * Gets the horizontal offset angle from networkTable
      * @return The horizontal offset angle from the limelight crosshair to the target
      */
-    public Double getHorizontalOffset() {
-        
+    public Double getHorizontalOffset() {  
         if(hasTargets()){
-
-        return table.getEntry("tx").getNumber(0).doubleValue();
-        
+            return table.getEntry("tx").getNumber(0).doubleValue();
         }
+
         return Double.NaN;
     }
 
@@ -99,46 +115,39 @@ public class Limelight implements Sendable{
             return 30 + (table.getEntry("ty").getNumber(0).doubleValue());
 
         }
-            return Double.NaN;
-
+        
+        return Double.NaN;
     }
 
-   
 
-     /**
+    /**
       * Outputs between -90 and 0 degrees
       * @return The skew of the target that is currently within the limelight's viewframe
       */
     public Double getSkew() {
-
         if(hasTargets()){
-
             return table.getEntry("ts0").getNumber(0).doubleValue();
-
         }
-            return Double.NaN;
-        
-        
+
+        return Double.NaN;
     }
 
-   
-
-     /**
+     
+    /**
       * Returns the total area that the current target takes up on the limelight's screen
       * Outputs a value associated with the percent of the screen being taken up
       * @return The area of the limelight screen being taken up
       */
     public Double getTargetArea() {
-
         if(hasTargets()){
-        return table.getEntry("ta").getNumber(0).doubleValue();
+            return table.getEntry("ta").getNumber(0).doubleValue();
         }
 
         return Double.NaN;
     }
 
 
-     /**
+    /**
       * Uses the horizontal offset that determines if the robot is looking left
       * @return A boolean that says if the robot is looking left
       */
@@ -147,6 +156,7 @@ public class Limelight implements Sendable{
         return getHorizontalOffset() < 0;
 
     }
+
 
     /**
      * Uses the pitch and yaw values from networkTables to construct and returns a rotation2D
@@ -173,6 +183,7 @@ public class Limelight implements Sendable{
 
     }
 
+
     /**
      * Uses values from networkTables to construct and return a translation2D
      * @return a translation2D made from the robot x and robot y values, represents movement to the currently seen target
@@ -191,6 +202,8 @@ public class Limelight implements Sendable{
         return new Translation2d(robotPositionX, robotPositionY);
 
     }
+
+
     /**
      *  Uses an existing translation2d and rotation2d to make a transform2d
      * @param constructorTranslation2d
@@ -202,12 +215,10 @@ public class Limelight implements Sendable{
          * Uses a translation2d & a rotation2d parameter to construct a transform2d, then returns it
          */
         return new Transform2d(constructorTranslation2d, constructorRotation2d);
-
     }
 
 
-
-     /**
+    /**
       * returns a boolean value that lets us know if the limelight has any targets
       * @return If the limelight has any targets
       */
@@ -216,7 +227,7 @@ public class Limelight implements Sendable{
     }
 
 
-     /**
+    /**
       *checks if the limelight is in Apriltag, and if it has a target,  returns the ID of the Apriltag. Otherwise, it returns null.
       * @return The ID of the currently targeted Apriltag
       */
@@ -226,7 +237,7 @@ public class Limelight implements Sendable{
             if(hasTargets()){
                 return table.getEntry("tid").getDouble(0.0);
             }
-         }
+        }
 
         return null;
 
@@ -236,8 +247,7 @@ public class Limelight implements Sendable{
      * Checks what target we are looking at, calculates the forward distance, and returns it
      * @return Forward distance from the current vision target
      */
-    public Double forwardDistanceToTarget()
-    {
+    public Double forwardDistanceToTarget() {
         if(hasTargets()){
             double verticalOffset = getVerticalOffset();
             if(getPipeline() == 0)
@@ -326,6 +336,32 @@ public class Limelight implements Sendable{
                 }
             }
         }
+    
+
+    @Override
+    public List<Connection> hardwareConnections() {
+        return List.of(
+            Connection.fromLimelight(table)
+        );
+    }
+
+    @Override
+    public CommandBase testRoutine() {
+        return Commands.sequence(
+            // set leds to blink
+            new InstantCommand(
+                () -> { setLedMode(2); }
+            ),
+
+            // wait for 2 seconds
+            new WaitCommand(2),
+            
+            // set leds back to pipeline default
+            new InstantCommand(
+                () -> { setLedMode(0); }
+            )
+        );
+    }
 
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -335,5 +371,6 @@ public class Limelight implements Sendable{
         builder.addDoubleProperty("Horizontal Offset", this::getHorizontalOffset, null);
         builder.addDoubleProperty("Vertical Offset", this::getVerticalOffset, null);
         builder.addDoubleProperty("Forward Distance From Target", this::forwardDistanceToTarget, null);
+        builder.addIntegerProperty("Current Pipeline", this::getPipeline, null);
     }
 }
