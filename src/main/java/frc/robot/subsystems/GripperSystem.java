@@ -28,7 +28,12 @@ public class GripperSystem extends SubsystemBase {
   private final ColorSensorV3 colorSensor;
   private CANSparkMax rollerMotor;
   private Limelight limelight;
-
+  private double ir;
+  private double blue;
+  private double green;
+  private double red;
+  private double proximity;
+  private int i2cDelay = 0;
   /** Creates a new GripperSystem. */
   public GripperSystem(Limelight limelight) {
     colorSensor = new ColorSensorV3(GripperConstants.I2C_PORT);
@@ -72,7 +77,7 @@ public class GripperSystem extends SubsystemBase {
   }
 
   private boolean checkForCube() {
-    return checkForGamePiece() && colorSensor.getColor().blue > MINIMUM_BLUE_VALUE_FOR_CUBE;
+    return checkForGamePiece() && blue > MINIMUM_BLUE_VALUE_FOR_CUBE;
   }
 
   /**
@@ -99,11 +104,11 @@ public class GripperSystem extends SubsystemBase {
   
     builder.setSmartDashboardType("GripperSystem");
 
-    builder.addDoubleProperty("Red", () -> colorSensor.getColor().red, null);
-    builder.addDoubleProperty("Green", () -> colorSensor.getColor().green, null);
-    builder.addDoubleProperty("Blue", () -> colorSensor.getColor().blue, null);
-    builder.addDoubleProperty("IR", () -> colorSensor.getIR(), null);
-    builder.addDoubleProperty("Proximity", () -> colorSensor.getProximity(), null);
+    builder.addDoubleProperty("Red", () -> red, null);
+    builder.addDoubleProperty("Green", () -> green, null);
+    builder.addDoubleProperty("Blue", () -> blue, null);
+    builder.addDoubleProperty("IR", () -> ir, null);
+    builder.addDoubleProperty("Proximity", () -> proximity, null);
     builder.addBooleanProperty("Cube picked up?", () -> checkForCube(), null);
     builder.addBooleanProperty("Game piece picked up?", () -> checkForGamePiece(), null);
     builder.addDoubleProperty("Current Draw Readings", () -> rollerMotor.getOutputCurrent(), null);
@@ -112,5 +117,22 @@ public class GripperSystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if(i2cDelay == 0){
+      Color color = colorSensor.getColor();
+      red = color.red;
+      blue = color.blue;
+      green = color.green;
+    }
+
+    if(i2cDelay == 1){
+      ir = colorSensor.getIR();
+    }
+
+    if(i2cDelay == 2){
+      proximity = colorSensor.getProximity();
+    }
+
+    i2cDelay++;
+    i2cDelay %= 6;
   }
 }
